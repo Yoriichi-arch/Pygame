@@ -7,45 +7,6 @@ left = 1000 // 2 - 630 // 2
 top = 700 // 2 - 630 // 2
 all_sprites_rect = pygame.sprite.Group()
 
-rect_left = pygame.Rect((left, top, 1, 630))
-rect_top = pygame.Rect((left, top, 630, 1))
-rect_right = pygame.Rect((left + 560, top, 1, 630))
-rect_down = pygame.Rect((left, top + 560, 630, 1))
-
-
-border_left = pygame.sprite.Sprite(all_sprites_rect)
-border_left.image = pygame.Surface([1, 630])
-border_left.image.fill(pygame.Color('red'))
-border_left.rect = border_left.image.get_rect(left=left, top=top)
-
-border_top = pygame.sprite.Sprite(all_sprites_rect)
-border_top.image = pygame.Surface([630, 1])
-border_top.image.fill(pygame.Color('red'))
-border_top.rect = border_top.image.get_rect(left=left, top=top)
-
-border_right = pygame.sprite.Sprite(all_sprites_rect)
-border_right.image = pygame.Surface([1, 630])
-border_right.image.fill(pygame.Color('red'))
-border_right.rect = border_right.image.get_rect(left=left + 560, top=top)
-
-border_down = pygame.sprite.Sprite(all_sprites_rect)
-border_down.image = pygame.Surface([630, 1])
-border_down.image.fill(pygame.Color('red'))
-border_down.rect = border_down.image.get_rect(left=left, top=top + 560)
-
-spisok = [border_left.rect, border_top.rect, border_right.rect, border_down.rect]
-
-sp = [rect_left, rect_top, rect_right, rect_down]
-
-class Board:
-    # создание поля
-    def __init__(self, left, top):
-        self.left = left
-        self.top = top
-
-    def render(self, surface):
-        pygame.draw.rect(surface, 'white', (left, top, 630, 630))
-
 
 def load_image(name, colorkey=None):
     fullname = os.path.join('../resources', name)
@@ -57,26 +18,75 @@ def load_image(name, colorkey=None):
     return image
 
 
-def load_level(filename):
-    filename = '../resources/map.txt'
-    # читаем уровень, убирая символы перевода строки
-    with open(filename, 'r') as mapFile:
-        level_map = [line.strip() for line in mapFile]
+class Barrier(pygame.sprite.Sprite):
+    image = load_image('barrier.png')
 
-    # и подсчитываем максимальную длину
-    max_width = max(map(len, level_map))
+    def __init__(self, x, y):
+        super().__init__(all_sprites_rect)
+        self.image = Barrier.image
+        self.image = pygame.transform.scale(self.image, (70, 70))
+        self.rect = self.image.get_rect(left=x, top=y)
+        self.mask = pygame.mask.from_surface(self.image)
+        self.add(all_sprites_rect)
 
-    # дополняем каждую строку пустыми клетками ('.')
-    return list(map(lambda x: x.ljust(max_width, '.'), level_map))
+    def get_coords_cube(self):
+        x = self.rect.x
+        y = self.rect.y
+        coords = (x, y)
+        return coords
 
 
-def generate_level(level, surface, left, top):
-    for y in range(len(level)):
-        for x in range(len(level[y])):
-            if level[y][x] == '.':
-                pygame.draw.rect(surface, 'white', (left + 70 * x, top + 70 * y, 70, 70))
-            elif level[y][x] == '#':
-                pygame.draw.rect(surface, 'black', (left + 70 * x, top + 70 * y, 70, 70))
+# barrier = pygame.sprite.Sprite(all_sprites_rect)
+# barrier.image = load_image('barrier.png')
+# barrier.image = pygame.transform.scale(barrier.image, (70, 70))
+# barrier.rect = barrier.image.get_rect(left=left, top=top)
+
+
+border_left = pygame.sprite.Sprite(all_sprites_rect)
+border_left.image = pygame.Surface([1, 632])
+border_left.image.fill(pygame.Color('white'))
+border_left.rect = border_left.image.get_rect(left=left, top=top - 1)
+border_left.mask = pygame.mask.from_surface(border_left.image)
+
+border_top = pygame.sprite.Sprite(all_sprites_rect)
+border_top.image = pygame.Surface([632, 1])
+border_top.image.fill(pygame.Color('white'))
+border_top.rect = border_top.image.get_rect(left=left - 1, top=top)
+border_top.mask = pygame.mask.from_surface(border_left.image)
+
+border_right = pygame.sprite.Sprite(all_sprites_rect)
+border_right.image = pygame.Surface([1, 632])
+border_right.image.fill(pygame.Color('white'))
+border_right.rect = border_right.image.get_rect(left=left + 560, top=top - 1)
+border_right.mask = pygame.mask.from_surface(border_left.image)
+
+border_down = pygame.sprite.Sprite(all_sprites_rect)
+border_down.image = pygame.Surface([632, 1])
+border_down.image.fill(pygame.Color('white'))
+border_down.rect = border_down.image.get_rect(left=left - 1, top=top + 560)
+border_down.mask = pygame.mask.from_surface(border_left.image)
+
+spisok = [border_left.rect, border_top.rect, border_right.rect, border_down.rect]
+
+
+class Board:
+    # создание поля
+    def __init__(self, filename):
+        self.filename = filename
+        # читаем уровень, убирая символы перевода строки
+        with open(filename, 'r') as mapFile:
+            level_map = [line.strip() for line in mapFile]
+        # и подсчитываем максимальную длину
+        max_width = max(map(len, level_map))
+        # дополняем каждую строку пустыми клетками ('.')
+        self.level = list(map(lambda x: x.ljust(max_width, '.'), level_map))
+
+    def generate_level(self, surface, left, top):
+        for y in range(len(self.level)):
+            for x in range(len(self.level[y])):
+                if self.level[y][x] == '#':
+                    barrier = Barrier(left + 70 * x, top + 70 * y)
+                    screen.blit(barrier.image, barrier.rect)
 
 
 def terminate():
@@ -136,17 +146,17 @@ if __name__ == '__main__':
     clock = pygame.time.Clock()
     FPS = 60
     side = 70
-    left = 1000 // 2 - 630 // 2
-    top = 700 // 2 - 630 // 2
     width = 1000
     height = 70
     cube = Cube(left, top, '../resources/cube.png')
     screen = pygame.display.set_mode((1000, 700))
     pygame.display.set_caption('Paint Cube')
     pygame.display.set_icon(pygame.image.load('../resources/cube.png'))
-    board = Board(left, top)
+    board = Board('../resources/map.txt')
     start_screen(screen)
     screen.fill('#3FC1C9')
+    pygame.draw.rect(screen, 'white', (left, top, 630, 630))
+    board.generate_level(screen, left, top)
     while True:
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
@@ -163,8 +173,11 @@ if __name__ == '__main__':
         if key:
             cube.move(key, spisok)
         screen.fill('#3FC1C9')
-        generate_level(load_level('map.txt'), screen, left, top)
+        pygame.draw.rect(screen, 'white', (left, top, 630, 630))
+        all_sprites_rect.draw(screen)
         screen.blit(cube.image, cube.rect)
+
+        # pygame.draw.rect(screen, 'yellow', (cube.rect[0], cube.rect[1], 70, 70))
         pygame.display.update()
         clock.tick(FPS)
 
