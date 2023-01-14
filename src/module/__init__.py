@@ -3,6 +3,7 @@ import sys
 import os
 from src.module.cube import Cube
 
+
 left = 1000 // 2 - 630 // 2
 top = 700 // 2 - 630 // 2
 all_sprites_rect = pygame.sprite.Group()
@@ -43,27 +44,27 @@ class Barrier(pygame.sprite.Sprite):
 
 
 border_left = pygame.sprite.Sprite(all_sprites_rect)
-border_left.image = pygame.Surface([1, 632])
+border_left.image = pygame.Surface([1, 630])
 border_left.image.fill(pygame.Color('white'))
-border_left.rect = border_left.image.get_rect(left=left, top=top - 1)
+border_left.rect = border_left.image.get_rect(left=left, top=top)
 border_left.mask = pygame.mask.from_surface(border_left.image)
 
 border_top = pygame.sprite.Sprite(all_sprites_rect)
-border_top.image = pygame.Surface([632, 1])
+border_top.image = pygame.Surface([630, 1])
 border_top.image.fill(pygame.Color('white'))
-border_top.rect = border_top.image.get_rect(left=left - 1, top=top)
+border_top.rect = border_top.image.get_rect(left=left, top=top)
 border_top.mask = pygame.mask.from_surface(border_left.image)
 
 border_right = pygame.sprite.Sprite(all_sprites_rect)
-border_right.image = pygame.Surface([1, 632])
+border_right.image = pygame.Surface([1, 630])
 border_right.image.fill(pygame.Color('white'))
-border_right.rect = border_right.image.get_rect(left=left + 560, top=top - 1)
+border_right.rect = border_right.image.get_rect(left=left + 560, top=top)
 border_right.mask = pygame.mask.from_surface(border_left.image)
 
 border_down = pygame.sprite.Sprite(all_sprites_rect)
-border_down.image = pygame.Surface([632, 1])
+border_down.image = pygame.Surface([630, 1])
 border_down.image.fill(pygame.Color('white'))
-border_down.rect = border_down.image.get_rect(left=left - 1, top=top + 560)
+border_down.rect = border_down.image.get_rect(left=left, top=top + 560)
 border_down.mask = pygame.mask.from_surface(border_left.image)
 
 spisok = [border_left.rect, border_top.rect, border_right.rect, border_down.rect]
@@ -100,7 +101,9 @@ def check_click(x, y, width, height, position):
 
 
 # заставка
-def start_screen(screen):
+def start_screen(screen, width1, height1):
+    mem = load_image('meme.png')
+    mem = pygame.transform.scale(mem, (300, 300))
     flag = False
     screen.fill('#3FC1C9')
     font = pygame.font.Font('../resources/Montserrat-Light.ttf', 30)
@@ -113,10 +116,10 @@ def start_screen(screen):
     y = 700 // 2 - height // 2
     x1 = 1000 // 2 - 210 // 2
     y1 = 700 // 2 - 70 // 2
-    pygame.draw.rect(screen, '#323232', (x1, y1, width + 10, height + 10))
-    pygame.draw.rect(screen, '#14FFEC', (x, y, width, height))
-    screen.blit(text, (x + (width - text.get_width()) // 2,
-                       y + (height - text.get_height()) // 2))
+    pygame.draw.rect(screen, '#323232', (x1, y1 - 90, width + 10, height + 10))
+    pygame.draw.rect(screen, '#14FFEC', (x, y - 90, width, height))
+    screen.blit(mem, ((width1 // 2) - (300 // 2), 350))
+    screen.blit(text, (x + (width - text.get_width()) // 2, (y + (height - text.get_height()) // 2) - 90))
 
     while True:
         for event in pygame.event.get():
@@ -140,6 +143,12 @@ def start_screen(screen):
         clock.tick(FPS)
 
 
+def score(count):
+    font = pygame.font.Font('../resources/Montserrat-Light.ttf', 16)
+    text = font.render(f'Ходы: {count}', False, 'white')
+    screen.blit(text, (40, 40))
+
+
 if __name__ == '__main__':
     pygame.init()
     key = None
@@ -147,37 +156,42 @@ if __name__ == '__main__':
     FPS = 60
     side = 70
     width = 1000
-    height = 70
+    height = 700
     cube = Cube(left, top, '../resources/cube.png')
     screen = pygame.display.set_mode((1000, 700))
     pygame.display.set_caption('Paint Cube')
     pygame.display.set_icon(pygame.image.load('../resources/cube.png'))
     board = Board('../resources/map.txt')
-    start_screen(screen)
+    start_screen(screen, width, height)
     screen.fill('#3FC1C9')
     pygame.draw.rect(screen, 'white', (left, top, 630, 630))
     board.generate_level(screen, left, top)
+    count = 0
     while True:
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 terminate()
             elif event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_DOWN:
+                    count += 1
                     key = 'down'
                 elif event.key == pygame.K_UP:
+                    count += 1
                     key = 'up'
                 elif event.key == pygame.K_LEFT:
+                    count += 1
                     key = 'left'
                 elif event.key == pygame.K_RIGHT:
+                    count += 1
                     key = 'right'
         if key:
             cube.move(key, spisok)
         screen.fill('#3FC1C9')
         pygame.draw.rect(screen, 'white', (left, top, 630, 630))
         all_sprites_rect.draw(screen)
+        score(count)
         screen.blit(cube.image, cube.rect)
 
         # pygame.draw.rect(screen, 'yellow', (cube.rect[0], cube.rect[1], 70, 70))
         pygame.display.update()
         clock.tick(FPS)
-
