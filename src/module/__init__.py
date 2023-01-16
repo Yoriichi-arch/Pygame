@@ -3,6 +3,11 @@ import sys
 import os
 from src.module.cube import Cube
 
+x, y = 70, 70
+list_coordinates = []
+for i in range(10):
+    list_coordinates.append(i)
+
 
 left = 1000 // 2 - 630 // 2
 top = 700 // 2 - 630 // 2
@@ -35,13 +40,6 @@ class Barrier(pygame.sprite.Sprite):
         y = self.rect.y
         coords = (x, y)
         return coords
-
-
-# barrier = pygame.sprite.Sprite(all_sprites_rect)
-# barrier.image = load_image('barrier.png')
-# barrier.image = pygame.transform.scale(barrier.image, (70, 70))
-# barrier.rect = barrier.image.get_rect(left=left, top=top)
-
 
 border_left = pygame.sprite.Sprite(all_sprites_rect)
 border_left.image = pygame.Surface([1, 630])
