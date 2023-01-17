@@ -28,7 +28,6 @@ class Barrier(pygame.sprite.Sprite):
         self.image = pygame.transform.scale(self.image, (70, 70))
         self.rect = self.image.get_rect(left=x, top=y)
         self.mask = pygame.mask.from_surface(self.image)
-        self.add(all_sprites_rect)
 
     def get_coords_cube(self):
         x = self.rect.x
@@ -37,25 +36,25 @@ class Barrier(pygame.sprite.Sprite):
         return coords
 
 
-border_left = pygame.sprite.Sprite(all_sprites_rect)
+border_left = pygame.sprite.Sprite()
 border_left.image = pygame.Surface([1, 630])
 border_left.image.fill(pygame.Color('white'))
 border_left.rect = border_left.image.get_rect(left=left, top=top)
 border_left.mask = pygame.mask.from_surface(border_left.image)
 
-border_top = pygame.sprite.Sprite(all_sprites_rect)
+border_top = pygame.sprite.Sprite()
 border_top.image = pygame.Surface([630, 1])
 border_top.image.fill(pygame.Color('white'))
 border_top.rect = border_top.image.get_rect(left=left, top=top)
 border_top.mask = pygame.mask.from_surface(border_left.image)
 
-border_right = pygame.sprite.Sprite(all_sprites_rect)
+border_right = pygame.sprite.Sprite()
 border_right.image = pygame.Surface([1, 630])
 border_right.image.fill(pygame.Color('white'))
 border_right.rect = border_right.image.get_rect(left=left + 560, top=top)
 border_right.mask = pygame.mask.from_surface(border_left.image)
 
-border_down = pygame.sprite.Sprite(all_sprites_rect)
+border_down = pygame.sprite.Sprite()
 border_down.image = pygame.Surface([630, 1])
 border_down.image.fill(pygame.Color('white'))
 border_down.rect = border_down.image.get_rect(left=left, top=top + 560)
@@ -74,8 +73,6 @@ class Board:
             for j in range(10):
                 s.append((x * j + 185, y * i + 35))
             self.list_coordinates.append(s)
-        for i in self.list_coordinates:
-            print(i)
         self.slovar = {}
         self.filename = filename
         # читаем уровень, убирая символы перевода строки
