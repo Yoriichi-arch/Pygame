@@ -7,18 +7,23 @@ class Cube(pygame.sprite.Sprite):
         self.image = pygame.image.load(filename)
         self.rect = self.image.get_rect(left=x, top=y)
 
-    def move(self, key, spisok):
+    def move(self, key, spisok, symbols):
+        x = self.rect.x
+        y = self.rect.y
+        coords = f'({x}, {y})'
         if key == 'down':
-            if not spisok[3].colliderect(self.rect):
+            if (spisok[3].colliderect(self.rect) is False) and symbols[coords] != '#':
                 self.rect.y += 70
+            else:
+                self.rect.y -= 70
         elif key == 'up':
-            if not spisok[1].colliderect(self.rect):
+            if (spisok[1].colliderect(self.rect) is False) and symbols[coords] != '#':
                 self.rect.y -= 70
         elif key == 'left':
-            if not spisok[0].colliderect(self.rect):
+            if (spisok[0].colliderect(self.rect) is False) and symbols[coords] != '#':
                 self.rect.x -= 70
         elif key == 'right':
-            if not spisok[2].colliderect(self.rect):
+            if (spisok[2].colliderect(self.rect) is False) and symbols[coords] != '#':
                 self.rect.x += 70
 
     def get_coords_cube(self):

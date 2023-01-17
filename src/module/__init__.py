@@ -3,11 +3,6 @@ import sys
 import os
 from src.module.cube import Cube
 
-x, y = 70, 70
-list_coordinates = []
-for i in range(10):
-    list_coordinates.append(i)
-
 
 left = 1000 // 2 - 630 // 2
 top = 700 // 2 - 630 // 2
@@ -41,6 +36,7 @@ class Barrier(pygame.sprite.Sprite):
         coords = (x, y)
         return coords
 
+
 border_left = pygame.sprite.Sprite(all_sprites_rect)
 border_left.image = pygame.Surface([1, 630])
 border_left.image.fill(pygame.Color('white'))
@@ -71,6 +67,14 @@ spisok = [border_left.rect, border_top.rect, border_right.rect, border_down.rect
 class Board:
     # создание поля
     def __init__(self, filename):
+        x, y = 70, 70
+        self.list_coordinates = []
+        for i in range(10):
+            s = []
+            for j in range(10):
+                s.append((x * j + 185, y * i + 35))
+            self.list_coordinates.append(s)
+        self.slovar = {}
         self.filename = filename
         # читаем уровень, убирая символы перевода строки
         with open(filename, 'r') as mapFile:
@@ -78,7 +82,12 @@ class Board:
         # и подсчитываем максимальную длину
         max_width = max(map(len, level_map))
         # дополняем каждую строку пустыми клетками ('.')
-        self.level = list(map(lambda x: x.ljust(max_width, '.'), level_map))
+        self.level = list(level_map)
+        n = 0
+        # создаём словарь с символами и их координатами
+        for (i, j) in zip(self.list_coordinates, level_map):
+            for (g, h) in zip(i, j):
+                self.slovar[str(g)] = h
 
     def generate_level(self, surface, left, top):
         for y in range(len(self.level)):
@@ -86,6 +95,9 @@ class Board:
                 if self.level[y][x] == '#':
                     barrier = Barrier(left + 70 * x, top + 70 * y)
                     screen.blit(barrier.image, barrier.rect)
+
+    def slov(self):
+        return self.slovar
 
 
 def terminate():
@@ -149,22 +161,24 @@ def score(count):
 
 if __name__ == '__main__':
     pygame.init()
+    screen = pygame.display.set_mode((1000, 700))
+    pygame.display.set_caption('Paint Cube')
+    pygame.display.set_icon(pygame.image.load('../resources/cube.png'))
     key = None
     clock = pygame.time.Clock()
     FPS = 60
     side = 70
     width = 1000
     height = 700
-    cube = Cube(left, top, '../resources/cube.png')
-    screen = pygame.display.set_mode((1000, 700))
-    pygame.display.set_caption('Paint Cube')
-    pygame.display.set_icon(pygame.image.load('../resources/cube.png'))
     board = Board('../resources/map.txt')
-    start_screen(screen, width, height)
+    board.generate_level(screen, left, top)
+    cube = Cube(left, top, '../resources/cube.png')
+    # start_screen(screen, width, height)
     screen.fill('#3FC1C9')
     pygame.draw.rect(screen, 'white', (left, top, 630, 630))
-    board.generate_level(screen, left, top)
+
     count = 0
+    flag = False
     while True:
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
@@ -182,14 +196,19 @@ if __name__ == '__main__':
                 elif event.key == pygame.K_RIGHT:
                     count += 1
                     key = 'right'
+                elif event.key == pygame.K_ESCAPE:
+                    flag = True
         if key:
-            cube.move(key, spisok)
-        screen.fill('#3FC1C9')
-        pygame.draw.rect(screen, 'white', (left, top, 630, 630))
-        all_sprites_rect.draw(screen)
-        score(count)
-        screen.blit(cube.image, cube.rect)
+            cube.move(key, spisok, board.slov())
 
+        if not flag:
+            screen.fill('#3FC1C9')
+            pygame.draw.rect(screen, 'white', (left, top, 630, 630))
+            all_sprites_rect.draw(screen)
+            score(count)
+            screen.blit(cube.image, cube.rect)
+        else:
+            screen.fill('#3FC1C9')
         # pygame.draw.rect(screen, 'yellow', (cube.rect[0], cube.rect[1], 70, 70))
         pygame.display.update()
         clock.tick(FPS)
