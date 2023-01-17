@@ -6,6 +6,8 @@ class Cube(pygame.sprite.Sprite):
         pygame.sprite.Sprite.__init__(self)
         self.image = pygame.image.load(filename)
         self.rect = self.image.get_rect(left=x, top=y)
+        event = False
+        move = False
 
     def move(self, key, spisok, symbols):
         x = self.rect.x
@@ -31,5 +33,4 @@ class Cube(pygame.sprite.Sprite):
     def get_coords_cube(self):
         x = self.rect.x
         y = self.rect.y
-        coords = (x, y)
-        return coords
+        return x, y
