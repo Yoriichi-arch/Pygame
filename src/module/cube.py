@@ -12,17 +12,19 @@ class Cube(pygame.sprite.Sprite):
         y = self.rect.y
         coords = f'({x}, {y})'
         if key == 'down':
+            coords = f'({x}, {y + 70})'
             if (spisok[3].colliderect(self.rect) is False) and symbols[coords] != '#':
                 self.rect.y += 70
-            else:
-                self.rect.y -= 70
         elif key == 'up':
+            coords = f'({x}, {y - 70})'
             if (spisok[1].colliderect(self.rect) is False) and symbols[coords] != '#':
                 self.rect.y -= 70
         elif key == 'left':
+            coords = f'({x - 70}, {y})'
             if (spisok[0].colliderect(self.rect) is False) and symbols[coords] != '#':
                 self.rect.x -= 70
         elif key == 'right':
+            coords = f'({x + 70}, {y})'
             if (spisok[2].colliderect(self.rect) is False) and symbols[coords] != '#':
                 self.rect.x += 70
 
