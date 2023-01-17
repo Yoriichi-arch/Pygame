@@ -74,6 +74,8 @@ class Board:
             for j in range(10):
                 s.append((x * j + 185, y * i + 35))
             self.list_coordinates.append(s)
+        for i in self.list_coordinates:
+            print(i)
         self.slovar = {}
         self.filename = filename
         # читаем уровень, убирая символы перевода строки
@@ -176,9 +178,9 @@ if __name__ == '__main__':
     # start_screen(screen, width, height)
     screen.fill('#3FC1C9')
     pygame.draw.rect(screen, 'white', (left, top, 630, 630))
-
     count = 0
     flag = False
+    pygame.draw.rect(screen, 'white', (left, top, 630, 630))
     while True:
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
@@ -196,19 +198,11 @@ if __name__ == '__main__':
                 elif event.key == pygame.K_RIGHT:
                     count += 1
                     key = 'right'
-                elif event.key == pygame.K_ESCAPE:
-                    flag = True
         if key:
             cube.move(key, spisok, board.slov())
-
-        if not flag:
-            screen.fill('#3FC1C9')
-            pygame.draw.rect(screen, 'white', (left, top, 630, 630))
-            all_sprites_rect.draw(screen)
-            score(count)
-            screen.blit(cube.image, cube.rect)
-        else:
-            screen.fill('#3FC1C9')
-        # pygame.draw.rect(screen, 'yellow', (cube.rect[0], cube.rect[1], 70, 70))
+        all_sprites_rect.draw(screen)
+        score(count)
+        screen.blit(cube.image, cube.rect)
+        pygame.draw.rect(screen, 'yellow', (cube.rect[0], cube.rect[1], 70, 70))
         pygame.display.update()
         clock.tick(FPS)
