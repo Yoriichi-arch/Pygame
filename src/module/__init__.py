@@ -139,18 +139,6 @@ def production2():
         pygame.display.flip()
 
 
-def production3():
-    prod6 = load_image('prod6.png')
-    while True:
-        for event in pygame.event.get():
-            if event.type == pygame.QUIT:
-                terminate()
-            elif event.type == pygame.KEYDOWN:
-                return
-        screen.blit(prod6, (0, 0))
-        pygame.display.flip()
-
-
 particles = []
 
 
@@ -223,7 +211,6 @@ if __name__ == '__main__':
     pygame.display.set_icon(pygame.image.load('../resources/cube.png'))
     production()
     production2()
-    production3()
     key = None
     clock = pygame.time.Clock()
     move = None
