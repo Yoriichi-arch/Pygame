@@ -123,7 +123,6 @@ def production():
                 return
         screen.blit(prod, (0, 0))
         screen.blit(prod2, (1000 // 2 - prod2.get_width() // 2, 100))
-        screen.blit(prod4, (1000 // 2 - prod4.get_width() // 2, 600))
         pygame.display.flip()
 
 
