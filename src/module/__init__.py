@@ -270,18 +270,7 @@ if __name__ == '__main__':
             score(count)
 
             screen.blit(cube.image, cube.rect)
-            if key == 'down':
-                emit_purticle(x + 35, y + 35, random.uniform(-10, 10), -10, 10)
-                update_particle()
-            elif key == 'up':
-                emit_purticle(x + 35, y + 35, random.uniform(-10, 10), 10, 10)
-                update_particle()
-            elif key == 'left':
-                emit_purticle(x + 35, y + 35, 10, random.uniform(-10, 10), 10)
-                update_particle()
-            elif key == 'right':
-                emit_purticle(x + 35, y + 35, -10, random.uniform(-10, 10), 10)
-                update_particle()
+   
             flag = False
         if n:
             screen.blit(final, (0, 0))
